@@ -277,7 +277,11 @@ button { cursor: pointer; }
   outline-color: var(--navy);
 }
 
-.num { font-variant-numeric: tabular-nums; }
+/* Phone numbers: even digits, and never split across two lines. */
+.num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 
 .visually-hidden {
   position: absolute !important;

@@ -161,6 +161,10 @@ import { site } from '../data/site';
     line-height: 1.5;
   }
 
+  /* Smallest phones: keep the email address on one line. */
+  @media (max-width: 374px) {
+    .loc-email { font-size: 16px; }
+  }
   @media (max-width: 959px) {
     .loc-grid { grid-template-columns: 1fr; }
     .loc-map { min-height: 320px; }

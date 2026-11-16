@@ -133,6 +133,8 @@ const links = [
   .nav a {
     text-decoration: none;
     padding: 12px 0;
+    min-width: 44px; /* "FAQs" is short; keep a full-size tap area */
+    text-align: center;
   }
   .nav a:hover { text-decoration: underline; }
   .nav-call {
@@ -220,6 +222,18 @@ const links = [
     .head-row :global(.head-logo svg) {
       width: 36px;
       height: 25px;
+    }
+  }
+  /* Smallest phones (320–374px): shrink the wordmark a touch so logo, phone and menu buttons
+     stay on one line. */
+  @media (max-width: 374px) {
+    .head-row { gap: 8px; }
+    .head-row :global(.head-logo) { gap: 8px; }
+    .head-row :global(.logo-name) { font-size: 24px; }
+    .head-row :global(.logo-sub) { font-size: 12.5px; }
+    .head-row :global(.head-logo svg) {
+      width: 32px;
+      height: 22px;
     }
   }
 </style>
