@@ -194,15 +194,28 @@ const links = [
     :global(.js) .burger[aria-expanded='true'] ~ .nav { display: flex; }
   }
 
+  /* Phones: a slimmer bar (about 69px instead of 92px). Buttons stay at the 44px tap minimum;
+     the scrolled pill shrinks by the same amount so the header height still never changes. */
   @media (max-width: 760px) {
+    .site-header {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .site-header.is-scrolled {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+    .head-row :global(.head-logo) { padding: 1px 0; }
+    .head-row :global(.logo-name) { font-size: 25px; }
+    .head-row :global(.logo-sub) { font-size: 13.5px; }
     .head-phone {
-      padding: 10px 14px;
-      min-height: 48px;
+      padding: 8px 14px;
+      min-height: 44px;
       font-size: 16px;
     }
     .burger {
       padding: 0 14px;
-      min-height: 48px;
+      min-height: 44px;
     }
   }
 
@@ -214,7 +227,7 @@ const links = [
     .head-phone,
     .burger {
       padding: 0;
-      width: 48px;
+      width: 44px;
       justify-content: center;
     }
     .head-row { gap: 10px; }
@@ -228,9 +241,18 @@ const links = [
      stay on one line. */
   @media (max-width: 374px) {
     .head-row { gap: 8px; }
-    .head-row :global(.head-logo) { gap: 8px; }
+    /* The pill's inner padding costs width here: tighten so the row (logo 161 + two 44px
+       buttons) stays on one line. */
+    .site-header.is-scrolled .head-row {
+      padding-left: 12px;
+      gap: 6px;
+    }
+    .head-row :global(.head-logo) {
+      gap: 8px;
+      min-height: 44px; /* keep a full-size tap area with the smaller wordmark */
+    }
     .head-row :global(.logo-name) { font-size: 24px; }
-    .head-row :global(.logo-sub) { font-size: 12.5px; }
+    .head-row :global(.logo-sub) { font-size: 12px; }
     .head-row :global(.head-logo svg) {
       width: 32px;
       height: 22px;
