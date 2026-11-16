@@ -1,0 +1,160 @@
+---
+import { Image } from 'astro:assets';
+import IconCircle from './IconCircle.astro';
+import LineIcon from './LineIcon.astro';
+import { site, reasons } from '../data/site';
+
+// One small motion per icon, matched to its meaning (people, pin, shield, document).
+const iconMotion = ['bob', 'drop', 'pulse', 'tilt'] as const;
+---
+
+<section id="about" class="section pad bg-soft" aria-labelledby="why-title">
+  <div class="container why">
+    <div class="why-head reveal">
+      <h2 id="why-title" class="h2">Why choose Nami for NDIS support in Sydney</h2>
+      <!-- UNVERIFIED comparison ("Most providers ..."): soften if the client cannot support it. -->
+      <p class="lede">
+        Most providers do support work or nursing. Nami does both, with one team. The person who helps you on Monday
+        can be the one who notices a wound needs a nurse on Thursday, and the nurse is already on the team.
+      </p>
+    </div>
+
+    <div class="why-wrap">
+      {
+        site.teamPhoto ? (
+          <Image class="team-photo reveal-pop" src={site.teamPhoto.src} alt={site.teamPhoto.alt} widths={[480, 720, 960, 1360]} sizes="(max-width: 959px) 100vw, 50vw" />
+        ) : (
+          <div class="team-placeholder reveal-pop" role="img" aria-label="Team photo placeholder">
+            <LineIcon name="photo" size={44} />
+            <strong>[TEAM PHOTO]</strong>
+            <span>Fills this tile</span>
+          </div>
+        )
+      }
+
+      <ul class="why-grid on-dark">
+        {
+          reasons.map((r, i) => (
+            <li class="reveal-pop">
+              <span class:list={['why-icon icon-move icon-move--auto', `move-${iconMotion[i % iconMotion.length]}`]}>
+                <IconCircle name={r.icon} tone={r.tone} size={64} />
+              </span>
+              <strong class="why-title">{r.title}</strong>
+              <span class="why-text">{r.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    display: flex;
+    flex-direction: column;
+    gap: 52px;
+  }
+  .why-head {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    text-align: center;
+  }
+  .why-head .h2 {
+    max-width: 20ch;
+    line-height: 1.2;
+  }
+  .why-head .lede {
+    max-width: 42em;
+    line-height: 1.65;
+  }
+
+  .why-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: stretch;
+  }
+
+  .team-photo {
+    width: 100%;
+    height: 100%;
+    min-height: 440px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  .team-placeholder {
+    min-width: 0;
+    min-height: 440px;
+    background: var(--lav-150);
+    border: 2px dashed var(--lav-400);
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    color: var(--ink-3);
+  }
+  .team-placeholder :global(svg) { color: var(--lav-500); }
+  .team-placeholder strong {
+    font-size: 18px;
+    color: var(--navy);
+  }
+  .team-placeholder span { font-size: 15px; }
+
+  .why-grid {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--navy);
+  }
+  .why-grid li {
+    min-width: 0;
+    background: var(--navy);
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  /* Checkerboard: cells 2 and 3 are one step lighter. */
+  .why-grid li:nth-child(2),
+  .why-grid li:nth-child(3) {
+    background: var(--navy-700);
+  }
+  /* Motion styles live in global.css (.icon-move); here the icons move constantly (--auto). */
+  .why-icon { margin-bottom: 8px; }
+  .why-title {
+    font-size: 20px;
+    line-height: 1.3;
+    color: #fff;
+  }
+  .why-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--lav-200);
+  }
+
+  @media (max-width: 959px) {
+    .why-wrap { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .why-grid { grid-template-columns: 1fr; }
+    .why-grid li:nth-child(3) { background: var(--navy); }
+    .why-grid li:nth-child(4) { background: var(--navy-700); }
+    .team-placeholder {
+      min-height: 260px;
+      padding: 28px;
+    }
+    .team-photo { min-height: 260px; }
+  }
+</style>

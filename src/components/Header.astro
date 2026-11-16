@@ -1,0 +1,223 @@
+---
+import Logo from './Logo.astro';
+import LineIcon from './LineIcon.astro';
+import { site } from '../data/site';
+
+const links = [
+  { label: 'Services', href: '#services' },
+  { label: 'Contact', href: '#location' },
+  { label: 'FAQs', href: '#faq' },
+];
+---
+
+<header class="site-header pad" data-track-location="header">
+  <div class="head-row container">
+    <Logo class="head-logo" />
+
+    <button type="button" class="burger" aria-expanded="false" aria-controls="main-nav">
+      <LineIcon name="menu" size={24} class="i-open" />
+      <LineIcon name="close" size={24} class="i-close" />
+      <span class="burger-label">Menu</span>
+    </button>
+
+    <nav id="main-nav" class="nav" aria-label="Main">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href={site.phone.href} class="nav-call num">
+        <LineIcon name="phone" size={22} />Call {site.phone.display}
+      </a>
+    </nav>
+
+    <a href={site.phone.href} class="btn btn--navy head-phone num" aria-label={`Call ${site.phone.display}`}>
+      <LineIcon name="phone" size={22} />
+      <span class="head-num">{site.phone.display}</span>
+    </a>
+  </div>
+</header>
+
+<style>
+  /* Sticky: always one tap from the phone number. Height never changes on scroll (no layout jump);
+     a soft shadow appears once the page has moved. */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: #fff;
+    border-bottom: 1px solid var(--line-soft);
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+  .site-header.is-scrolled {
+    border-bottom-color: transparent;
+    box-shadow: 0 6px 24px rgb(23 22 42 / 0.12);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .site-header { transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out; }
+  }
+  @media (max-width: 959px) {
+    /* An open menu taller than the screen scrolls inside the header. */
+    .site-header {
+      max-height: 100dvh;
+      overflow-y: auto;
+    }
+  }
+  .head-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 36px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .nav a {
+    text-decoration: none;
+    padding: 12px 0;
+  }
+  .nav a:hover { text-decoration: underline; }
+  .nav-call {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+  }
+  .head-phone { gap: 12px; padding: 14px 24px; }
+
+  .burger {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    color: var(--navy);
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    padding: 0 18px;
+    min-height: 60px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .burger:hover { background: var(--lav-150); }
+  .burger :global(.i-close) { display: none; }
+  .burger[aria-expanded='true'] :global(.i-open) { display: none; }
+  .burger[aria-expanded='true'] :global(.i-close) { display: block; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .burger { transition: background-color 0.18s ease-out; }
+  }
+
+  @media (max-width: 959px) {
+    .head-row {
+      gap: 10px 12px;
+      justify-content: flex-start;
+    }
+    .head-row :global(.head-logo) { margin-right: auto; }
+    .head-phone { order: 1; }
+    .burger { order: 2; }
+    .nav {
+      order: 3;
+      width: 100%;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 0;
+      font-size: 18px;
+      border-top: 1px solid var(--line-soft);
+      margin-top: 6px;
+    }
+    .nav a {
+      padding: 16px 4px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .nav a:last-child { border-bottom: 0; }
+    .nav .nav-call { display: flex; }
+
+    /* With JS the nav collapses behind the burger; without JS it stays open. */
+    :global(.js) .burger { display: inline-flex; }
+    :global(.js) .nav { display: none; }
+    :global(.js) .burger[aria-expanded='true'] ~ .nav { display: flex; }
+  }
+
+  @media (max-width: 760px) {
+    .head-phone {
+      padding: 10px 14px;
+      min-height: 48px;
+      font-size: 16px;
+    }
+    .burger {
+      padding: 0 14px;
+      min-height: 48px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .head-num,
+    .burger-label {
+      display: none;
+    }
+    .head-phone,
+    .burger {
+      padding: 0;
+      width: 48px;
+      justify-content: center;
+    }
+    .head-row { gap: 10px; }
+    .head-row :global(.head-logo) { gap: 10px; }
+    .head-row :global(.head-logo svg) {
+      width: 36px;
+      height: 25px;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('.site-header');
+  if (header) {
+    // Expose the header height so in-page links land below it (scroll-padding-top in global.css).
+    const setHeight = () =>
+      document.documentElement.style.setProperty('--header-h', `${Math.round(header.getBoundingClientRect().height)}px`);
+    setHeight();
+    new ResizeObserver(setHeight).observe(header);
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        header.classList.toggle('is-scrolled', window.scrollY > 4);
+        ticking = false;
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  const burger = document.querySelector<HTMLButtonElement>('.burger');
+  const nav = document.getElementById('main-nav');
+
+  if (burger && nav) {
+    const label = burger.querySelector('.burger-label');
+    const setOpen = (open: boolean) => {
+      burger.setAttribute('aria-expanded', String(open));
+      if (label) label.textContent = open ? 'Close' : 'Menu';
+    };
+
+    burger.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+    nav.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        burger.focus();
+      }
+    });
+    // Reset if the window grows past the mobile breakpoint.
+    matchMedia('(min-width: 960px)').addEventListener('change', (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
+</script>

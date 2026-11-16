@@ -1,0 +1,183 @@
+---
+// CLIENT TO CONFIRM before launch: these are copied verbatim from the live Base44 site and may be placeholders.
+import { testimonials } from '../data/site';
+---
+
+<section id="reviews" class="section pad bg-soft" aria-labelledby="tm-title">
+  <div class="container tm">
+    <div class="tm-head reveal">
+      <h2 id="tm-title" class="h2">Stories from our community</h2>
+      <p class="lede">Real experiences from the participants and families we're proud to support.</p>
+    </div>
+
+    <ul class="tm-grid">
+      {
+        testimonials.map((t) => (
+          <li class:list={['tm-card', 'reveal-pop', { 'tm-card--featured': t.featured }]}>
+            <figure>
+              <span class="tm-mark" aria-hidden="true">&ldquo;</span>
+              <blockquote>
+                <p class="tm-quote">{t.quote}</p>
+              </blockquote>
+              <figcaption>
+                <span class="tm-avatar" aria-hidden="true">{t.initials}</span>
+                <span class="tm-who">
+                  <strong>{t.name}</strong>
+                  <span>{t.role}</span>
+                </span>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .tm {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .tm-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 72px;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .tm-head .h2 { max-width: 16ch; }
+  .tm-head .lede { max-width: 26em; }
+
+  .tm-grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  .tm-card {
+    --bg: #fff;
+    --fg: var(--navy);
+    --soft: var(--ink-2);
+    --mark: var(--teal);
+    --rule: var(--line);
+    --avatar: var(--lav-100);
+    --avatar-fg: var(--navy);
+    min-width: 0;
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    display: flex;
+  }
+  .tm-card--featured {
+    --bg: var(--navy);
+    --fg: #fff;
+    --soft: var(--lav-200);
+    --mark: var(--teal-light);
+    --rule: var(--navy-600);
+    --avatar: var(--navy-600);
+    --avatar-fg: #fff;
+    grid-row: span 2;
+    padding: 44px;
+  }
+  figure {
+    margin: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .tm-mark {
+    display: block;
+    height: 30px;
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 1;
+    color: var(--mark);
+    align-self: flex-start;
+    transform-origin: 30% 55%;
+  }
+
+  /* Quote marks "talk": lift and tilt, settle, a smaller second lift, then rest. Constant, with
+     each card starting at a different moment. Paused by the page-wide pause button
+     (html.motion-off); still under reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .tm-mark { animation: quote-talk 3.2s ease-in-out infinite; }
+    .tm-card:nth-child(2) .tm-mark { animation-delay: 0.7s; }
+    .tm-card:nth-child(3) .tm-mark { animation-delay: 1.4s; }
+    :global(.motion-off) .tm-mark { animation-play-state: paused; }
+  }
+  @keyframes quote-talk {
+    0%, 60%, 100% { transform: none; }
+    15% { transform: translateY(-8px) rotate(-10deg) scale(1.12); }
+    30% { transform: none; }
+    42% { transform: translateY(-4px) rotate(-5deg) scale(1.06); }
+  }
+  blockquote { margin: 0; }
+  .tm-quote {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--fg);
+  }
+  .tm-card--featured .tm-quote {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.5;
+  }
+  figcaption {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tm-avatar {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--avatar);
+    color: var(--avatar-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+  .tm-who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.35;
+  }
+  .tm-who strong {
+    font-size: 18px;
+    color: var(--fg);
+  }
+  .tm-who span {
+    font-size: 15px;
+    color: var(--soft);
+  }
+
+  @media (max-width: 1079px) {
+    .tm-grid { grid-template-columns: 1fr; }
+    .tm-card--featured { grid-row: auto; }
+  }
+  @media (max-width: 760px) {
+    .tm-card,
+    .tm-card--featured {
+      padding: 28px;
+    }
+    .tm-card--featured .tm-quote { font-size: 18px; }
+  }
+</style>

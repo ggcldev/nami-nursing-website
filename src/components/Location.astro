@@ -1,0 +1,168 @@
+---
+import IconCircle from './IconCircle.astro';
+import { site } from '../data/site';
+---
+
+<section id="location" class="section pad bg-soft" aria-labelledby="loc-title" data-track-location="location">
+  <div class="container loc-grid">
+    <div class="loc-info">
+      <div class="loc-head reveal">
+        <h2 id="loc-title" class="h2">Where to find us</h2>
+        <p class="lede">Our support workers and nurses come to you, at home or out in the community. {site.areas}</p>
+      </div>
+      <ul class="loc-rows">
+        <li class="reveal">
+          <IconCircle name="map-pin" tone="coral" size={52} iconSize={26} />
+          <span class="loc-text">
+            <strong>Office</strong>
+            <span>{site.address}</span>
+          </span>
+        </li>
+        <li class="reveal">
+          <IconCircle name="phone" tone="yellow" size={52} iconSize={24} />
+          <span class="loc-text">
+            <strong>Call us</strong>
+            <a href={site.phone.href} class="loc-phone num">{site.phone.display}</a>
+          </span>
+        </li>
+        <li class="reveal">
+          <IconCircle name="envelope" tone="mint" size={52} iconSize={24} />
+          <span class="loc-text">
+            <strong>Email</strong>
+            <a href={`mailto:${site.email}`} class="loc-email">{site.email}</a>
+          </span>
+        </li>
+        <li class="reveal">
+          <IconCircle name="clock" tone="lavender" size={52} iconSize={26} />
+          <span class="loc-text">
+            <strong>Hours</strong>
+            <span>Support seven days a week. Nursing available 24/7.</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    {
+      site.mapEmbedUrl ? (
+        <iframe
+          class="loc-map reveal-pop"
+          src={site.mapEmbedUrl}
+          title="Google Map of Sydney, where our team works"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        />
+      ) : (
+        <div class="loc-map loc-map--placeholder reveal-pop" role="img" aria-label="Google Map placeholder">
+          <IconCircle name="map-pin" tone="coral" size={72} iconSize={36} />
+          <strong>[GOOGLE MAP]</strong>
+          <span>Google Map pinned to {site.address}. Fills this tile once the Business Profile listing is confirmed.</span>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .loc-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 48px 72px;
+    align-items: stretch;
+  }
+  .loc-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    justify-content: center;
+  }
+  .loc-head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .loc-head .h2 { max-width: 16ch; }
+  .loc-head .lede { max-width: 30em; }
+  .loc-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .loc-rows li {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .loc-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+    min-width: 0;
+  }
+  .loc-text strong {
+    font-size: 16px;
+    color: var(--navy);
+  }
+  .loc-text span {
+    font-size: 18px;
+    color: var(--ink-2);
+  }
+  .loc-phone {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+  }
+  .loc-email {
+    font-size: 18px;
+    color: var(--navy);
+    overflow-wrap: anywhere;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+  }
+
+  .loc-map {
+    min-width: 0;
+    width: 100%;
+    min-height: 460px;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--lav-150); /* shows while the map loads */
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .loc-map--placeholder {
+    background: var(--lav-150);
+    border: 2px dashed var(--lav-400);
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    color: var(--ink-3);
+  }
+  .loc-map--placeholder strong {
+    font-size: 18px;
+    color: var(--navy);
+  }
+  .loc-map--placeholder span {
+    max-width: 28em;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 959px) {
+    .loc-grid { grid-template-columns: 1fr; }
+    .loc-map { min-height: 320px; }
+  }
+</style>

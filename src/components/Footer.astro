@@ -1,0 +1,157 @@
+---
+import Logo from './Logo.astro';
+import { site, allServices, path } from '../data/site';
+
+const explore = [
+  { label: 'Why Nami', href: '#about' },
+  { label: 'Stories', href: '#reviews' },
+  { label: 'FAQs', href: '#faq' },
+  { label: 'Referrals for coordinators', href: path('/referral/') },
+  { label: 'Privacy policy', href: path('/privacy/') },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="foot pad on-dark" data-track-location="footer">
+  <div class="container foot-inner">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <Logo variant="dark" class="foot-logo" />
+        <p class="foot-tag">{site.tagline}.</p>
+        <p class="foot-note">
+          We are working towards NDIS registration and follow the NDIS Practice Standards. Self-managed and
+          plan-managed participants are welcome.
+        </p>
+      </div>
+
+      <nav aria-labelledby="foot-services" class="foot-col">
+        <p id="foot-services" class="foot-label">Services</p>
+        {allServices.map((s) => <a href={s.href}>{s.name}</a>)}
+      </nav>
+
+      <nav aria-labelledby="foot-explore" class="foot-col">
+        <p id="foot-explore" class="foot-label">Explore</p>
+        {explore.map((l) => <a href={l.href}>{l.label}</a>)}
+      </nav>
+
+      <div class="foot-col">
+        <p class="foot-label">Get in touch</p>
+        <a href={site.phone.href} class="foot-phone num">{site.phone.display}</a>
+        <a href={`mailto:${site.email}`} class="foot-email">{site.email}</a>
+        <p class="foot-hours">Sydney, NSW<br />Support seven days a week<br />Nursing available 24/7</p>
+        <a href="#start" class="foot-callback">Request a call back</a>
+      </div>
+    </div>
+
+    <div class="foot-legal">
+      <span>&copy; {year} {site.name}. ABN {site.abn}.</span>
+      <span>{site.acknowledgement}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    background: var(--navy-900);
+    color: var(--lav-200);
+    padding-top: 72px;
+    padding-bottom: 36px;
+  }
+  .foot-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: 48px 56px;
+  }
+  .foot a { text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+
+  .foot-brand {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .foot-brand :global(.foot-logo) { align-self: flex-start; }
+  .foot-tag {
+    margin: 0;
+    max-width: 22em;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .foot-note {
+    margin: 0;
+    max-width: 24em;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--lav-300);
+  }
+
+  .foot-col {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .foot-label {
+    margin: 0 0 8px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .foot-col a {
+    font-size: 16px;
+    color: var(--lav-200);
+    padding: 9px 0;
+    align-self: flex-start;
+  }
+  .foot-col .foot-phone {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    padding: 8px 0;
+  }
+  .foot-email { overflow-wrap: anywhere; }
+  .foot-hours {
+    margin: 0;
+    padding: 9px 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .foot-col .foot-callback {
+    font-weight: 700;
+    color: var(--teal-light);
+  }
+
+  .foot-legal {
+    border-top: 1px solid var(--navy-600);
+    padding-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+    justify-content: space-between;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--lav-300);
+  }
+
+  @media (max-width: 959px) {
+    .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .foot-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+  /* Room for the fixed call bar on phones. */
+  @media (max-width: 760px) {
+    .foot { padding-bottom: 112px; }
+  }
+</style>

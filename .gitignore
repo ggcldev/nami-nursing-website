@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Kept local only (public repo): client briefs, unverified notes and design source files.
+docs/
+design/

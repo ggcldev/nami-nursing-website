@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import WhyNami from '../components/WhyNami.astro';
+import Services from '../components/Services.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import Location from '../components/Location.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import Footer from '../components/Footer.astro';
+import MobileCallBar from '../components/MobileCallBar.astro';
+---
+
+<BaseLayout
+  title="NDIS Support in Sydney, from Everyday Help to Nursing | Nami"
+  description="Support work, personal care, community access, transport, domestic help and 24/7 registered nursing in Sydney, from one team. Self-managed and plan-managed NDIS participants welcome."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <!-- Hero holds still while "Why choose Nami" slides over it (src/scripts/heroCover.ts). -->
+    <div class="cover">
+      <Hero />
+      <WhyNami />
+    </div>
+    <Services />
+    <Testimonials />
+    <Faq />
+    <!-- "Where to find us" lifts away like a curtain to uncover the closing section waiting
+         underneath: the mirror of the hero cover (styles in global.css, .reveal-end). -->
+    <div class="reveal-end">
+      <Location />
+      <ClosingCta />
+    </div>
+  </main>
+  <Footer />
+  <MobileCallBar />
+</BaseLayout>
+
+<style>
+  main:focus { outline: none; }
+</style>
+
+<script>
+  import { initHeroCover } from '../scripts/heroCover';
+  import { initRevealEnd } from '../scripts/revealEnd';
+  initHeroCover();
+  initRevealEnd();
+</script>

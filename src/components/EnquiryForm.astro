@@ -1,0 +1,451 @@
+---
+import LineIcon from './LineIcon.astro';
+import { site, plans } from '../data/site';
+
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT || '';
+---
+
+<div id="start" class="form-card on-light" data-endpoint={endpoint} data-track-location="form">
+  <form class="enquiry" method="post" action={endpoint || undefined} novalidate>
+    <div class="form-head">
+      <h2 class="panel-h">Or send us a message</h2>
+      <p class="form-intro">Three quick questions. We call you back, usually {site.responseTime}.</p>
+    </div>
+
+    <div class="field">
+      <label for="f-name">Your name</label>
+      <input id="f-name" type="text" name="name" autocomplete="name" required aria-describedby="f-name-err" />
+      <p id="f-name-err" class="field-err" hidden>Please tell us your name.</p>
+    </div>
+
+    <div class="field">
+      <label for="f-phone">Phone number</label>
+      <input
+        id="f-phone"
+        type="tel"
+        name="phone"
+        autocomplete="tel"
+        inputmode="tel"
+        required
+        aria-describedby="f-phone-err"
+      />
+      <p id="f-phone-err" class="field-err" hidden>Enter a phone number we can call, like 0412 345 678.</p>
+    </div>
+
+    <div class="field">
+      <span id="plan-q" class="field-label">How is the NDIS plan managed?</span>
+      <div class="opts" role="group" aria-labelledby="plan-q">
+        {
+          plans.map((p) => (
+            <button type="button" class="opt" aria-pressed="false" data-plan={p.id}>
+              <span class="opt-dot" aria-hidden="true">
+                <span />
+              </span>
+              {p.label}
+            </button>
+          ))
+        }
+      </div>
+      <input type="hidden" name="plan" value="" />
+      <div class="answers" aria-live="polite">
+        {
+          plans.map((p) => (
+            <p class:list={['answer', p.ok ? 'answer--ok' : 'answer--info']} data-answer={p.id} hidden>
+              <strong>{p.verdict}</strong> {p.text}
+            </p>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Spam trap: hidden from people, bots fill it in. -->
+    <div class="hp" aria-hidden="true">
+      <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <p class="fine">Please do not include health details here. We will talk about your needs when we call.</p>
+
+    <p class="form-err" role="alert" hidden>
+      Sorry, your message did not send. Please try again, or call us on
+      <a href={site.phone.href} class="num">{site.phone.display}</a>.
+    </p>
+
+    <button type="submit" class="btn btn--teal submit">
+      <span class="submit-label">Request a call back</span>
+      <LineIcon name="arrow" size={18} class="nudge" />
+    </button>
+
+    <p class="fine">
+      We align with the NDIS Practice Standards as we work towards registration. Self-managed and plan-managed
+      participants can use Nami today.
+    </p>
+  </form>
+
+  <div class="sent" hidden>
+    <span class="sent-icon"><LineIcon name="check-circle" size={48} /></span>
+    <h2 class="panel-h" tabindex="-1">Thanks, we have your message.</h2>
+    <p>
+      One of our team will call you back, usually {site.responseTime}. If it is urgent, call us now on
+      <a href={site.phone.href} class="num">{site.phone.display}</a>.
+    </p>
+    <button type="button" class="btn btn--outline restart">Send another message</button>
+  </div>
+</div>
+
+<style>
+  .form-card {
+    min-width: 0;
+    width: 100%;
+    max-width: 600px;
+    justify-self: end;
+    background: #fff;
+    color: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+  }
+  .enquiry {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .form-head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .panel-h {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.25;
+    color: var(--navy);
+    max-width: 17ch;
+  }
+  .panel-h:focus { outline: none; }
+  .form-intro {
+    margin: 0;
+    font-size: 16px;
+    color: var(--ink-3);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .field label,
+  .field-label {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--navy);
+  }
+  .field input {
+    font-weight: 400;
+    font-size: 18px; /* stays 18px so iOS does not zoom */
+    color: var(--ink);
+    background: #fff;
+    padding: 14px 18px;
+    border: 2px solid var(--lav-500);
+    border-radius: var(--radius);
+    min-height: 60px;
+    width: 100%;
+  }
+  .field input:hover { border-color: var(--navy); }
+  .field input[aria-invalid='true'] {
+    border-color: #b42318;
+    border-width: 3px;
+  }
+  .field-err {
+    margin: 0;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    font-size: 16px;
+    font-weight: 600;
+    color: #b42318;
+  }
+  .field-err::before {
+    content: '!';
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #b42318;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    transform: translateY(3px);
+  }
+
+  .opts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 x 2, even on desktop */
+    gap: 10px;
+  }
+  @media (max-width: 379px) {
+    .opts { grid-template-columns: 1fr; }
+  }
+  .opt {
+    min-height: 56px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 2px solid var(--lav-400);
+    background: #fff;
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .opt:hover { border-color: var(--navy); }
+  .opt-dot {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--lav-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .opt-dot span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .opt[aria-pressed='true'] {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+  .opt[aria-pressed='true'] .opt-dot { border-color: #fff; }
+  .opt[aria-pressed='true'] .opt-dot span { background: #fff; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .opt,
+    .field input {
+      transition: border-color 0.18s ease-out, background-color 0.18s ease-out, color 0.18s ease-out;
+    }
+  }
+
+  .answer {
+    margin: 6px 0 0;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    line-height: 1.55;
+    color: #fff;
+  }
+  .answer--ok { background: var(--teal-dark); }
+  .answer--info { background: var(--navy); }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .fine {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-3);
+  }
+  .form-err {
+    margin: 0;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    border: 2px solid #b42318;
+    background: #fef3f2;
+    color: #7a271a;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  .form-err a {
+    font-weight: 700;
+    color: inherit;
+  }
+
+  .submit {
+    align-self: flex-start;
+    padding: 16px 28px;
+  }
+  .submit[aria-disabled='true'] {
+    opacity: 0.75;
+    cursor: progress;
+  }
+
+  .sent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 420px;
+    justify-content: center;
+  }
+  .sent[hidden] { display: none; }
+  .sent-icon { color: var(--teal-dark); }
+  .sent p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .sent p a {
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .restart { align-self: flex-start; }
+
+  @media (max-width: 1279px) {
+    .form-card { padding: 32px; }
+  }
+  @media (max-width: 959px) {
+    .form-card {
+      justify-self: stretch;
+      max-width: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .panel-h { font-size: 22px; }
+    .form-card { padding: 24px; }
+    .submit {
+      align-self: stretch;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  import { track } from '../scripts/analytics';
+
+  const card = document.getElementById('start');
+  const form = card?.querySelector<HTMLFormElement>('form.enquiry');
+  const sent = card?.querySelector<HTMLElement>('.sent');
+
+  if (card && form && sent) {
+    const endpoint = card.dataset.endpoint ?? '';
+    const name = form.querySelector<HTMLInputElement>('#f-name')!;
+    const phone = form.querySelector<HTMLInputElement>('#f-phone')!;
+    const planInput = form.querySelector<HTMLInputElement>('input[name="plan"]')!;
+    const formErr = form.querySelector<HTMLElement>('.form-err')!;
+    const submit = form.querySelector<HTMLButtonElement>('.submit')!;
+    const submitLabel = submit.querySelector<HTMLElement>('.submit-label')!;
+    const opts = [...form.querySelectorAll<HTMLButtonElement>('.opt')];
+    const answers = [...form.querySelectorAll<HTMLElement>('.answer')];
+    let busy = false;
+
+    // Plan type: aria-pressed buttons with an instant inline answer.
+    const pickPlan = (id: string) => {
+      planInput.value = id;
+      opts.forEach((o) => o.setAttribute('aria-pressed', String(o.dataset.plan === id)));
+      answers.forEach((a) => (a.hidden = a.dataset.answer !== id));
+    };
+    opts.forEach((o) =>
+      o.addEventListener('click', () => {
+        pickPlan(o.dataset.plan!);
+        track('plan_type_select', { plan_type: o.dataset.plan! });
+      }),
+    );
+
+    // Validation
+    const rules: [HTMLInputElement, (v: string) => boolean][] = [
+      [name, (v) => v.trim().length >= 2],
+      [phone, (v) => /^\+?[\d\s()-]+$/.test(v.trim()) && (v.match(/\d/g)?.length ?? 0) >= 8 && (v.match(/\d/g)?.length ?? 0) <= 15],
+    ];
+    const check = (input: HTMLInputElement, ok: (v: string) => boolean) => {
+      const valid = ok(input.value);
+      const err = document.getElementById(input.getAttribute('aria-describedby')!)!;
+      input.setAttribute('aria-invalid', String(!valid));
+      err.hidden = valid;
+      return valid;
+    };
+    // Re-check on blur only once a field has been flagged, so people are not scolded mid-typing.
+    rules.forEach(([input, ok]) => {
+      input.addEventListener('input', () => {
+        if (input.getAttribute('aria-invalid') === 'true') check(input, ok);
+      });
+      input.addEventListener('blur', () => {
+        if (input.getAttribute('aria-invalid') === 'true') check(input, ok);
+      });
+    });
+
+    const showSent = () => {
+      form.hidden = true;
+      sent.hidden = false;
+      sent.querySelector<HTMLElement>('.panel-h')?.focus();
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (busy) return;
+      formErr.hidden = true;
+
+      const results = rules.map(([input, ok]) => check(input, ok));
+      const firstBad = rules[results.indexOf(false)]?.[0];
+      if (firstBad) {
+        firstBad.focus();
+        return;
+      }
+
+      const data = new FormData(form);
+      if (String(data.get('company') ?? '').trim()) {
+        showSent(); // quietly drop bot submissions
+        return;
+      }
+
+      busy = true;
+      submit.setAttribute('aria-disabled', 'true');
+      submitLabel.textContent = 'Sending…';
+
+      try {
+        if (!endpoint) {
+          if (import.meta.env.DEV) {
+            console.info('[enquiry] No PUBLIC_FORM_ENDPOINT set; simulating success in dev.', Object.fromEntries(data));
+          } else {
+            throw new Error('PUBLIC_FORM_ENDPOINT is not set');
+          }
+        } else {
+          const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+          if (!res.ok) throw new Error(`Form endpoint returned ${res.status}`);
+        }
+        track('generate_lead', { form_name: 'call_back', plan_type: planInput.value || 'not_given' });
+        showSent();
+      } catch (err) {
+        console.error(err);
+        formErr.hidden = false;
+      } finally {
+        busy = false;
+        submit.removeAttribute('aria-disabled');
+        submitLabel.textContent = 'Request a call back';
+      }
+    });
+
+    sent.querySelector('.restart')?.addEventListener('click', () => {
+      form.reset();
+      pickPlan('');
+      rules.forEach(([input]) => {
+        input.removeAttribute('aria-invalid');
+        document.getElementById(input.getAttribute('aria-describedby')!)!.hidden = true;
+      });
+      sent.hidden = true;
+      form.hidden = false;
+      name.focus();
+    });
+
+    // "Send a message" links elsewhere on the page land the cursor in the first field.
+    document.querySelectorAll<HTMLAnchorElement>('a[href="#start"]').forEach((a) =>
+      a.addEventListener('click', () => {
+        const target = form.hidden ? sent.querySelector<HTMLElement>('.panel-h') : name;
+        setTimeout(() => target?.focus({ preventScroll: true }), 350);
+      }),
+    );
+  }
+</script>

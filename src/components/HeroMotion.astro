@@ -1,0 +1,213 @@
+---
+// Hero background: circles, medical crosses and care icons rising slowly behind the content.
+// aria-hidden, still under prefers-reduced-motion, and a pause button because it loops
+// (WCAG 2.2.2 Pause, Stop, Hide). Opacity is capped so white text keeps AA contrast.
+// Crosses are brand teal-green, never red: the red cross emblem is protected (Geneva Conventions Act 1957).
+// Care icons: Lucide (ISC licence), read from the npm package at build time.
+// Also used behind the closing CTA (tone="teal", controls={false}: the hero's button pauses both).
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  /** Colour set for the background it sits on. */
+  tone?: 'navy' | 'teal';
+  /** Show the page-wide pause button (only once per page, in the hero). */
+  controls?: boolean;
+}
+const { tone = 'navy', controls = true } = Astro.props;
+
+const lucide = (name: string) =>
+  fs
+    .readFileSync(path.resolve(process.cwd(), 'node_modules/lucide-static/icons', `${name}.svg`), 'utf8')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/^[\s\S]*?<svg[^>]*>/, '')
+    .replace(/<\/svg>\s*$/, '');
+
+type Shape =
+  | { kind: 'ring' | 'fill' | 'cross' }
+  | { kind: 'icon'; icon: 'stethoscope' | 'hand-heart' | 'accessibility' | 'house-heart' | 'heart-pulse' };
+
+// Fixed (not random) so every build renders the same. x = left %, s = size px, d = seconds per trip.
+const shapes: ({ x: number; s: number; d: number; delay: number } & Shape)[] = [
+  { x: 2, s: 168, d: 32, delay: -4, kind: 'fill' },
+  { x: 9, s: 44, d: 24, delay: -19, kind: 'cross' },
+  { x: 13, s: 56, d: 22, delay: -15, kind: 'ring' },
+  { x: 17, s: 58, d: 29, delay: -11, kind: 'icon', icon: 'stethoscope' },
+  { x: 20, s: 108, d: 34, delay: -26, kind: 'fill' },
+  { x: 27, s: 34, d: 19, delay: -8, kind: 'ring' },
+  { x: 32, s: 52, d: 28, delay: -3, kind: 'cross' },
+  { x: 37, s: 216, d: 42, delay: -20, kind: 'fill' },
+  { x: 41, s: 54, d: 31, delay: -24, kind: 'icon', icon: 'hand-heart' },
+  { x: 44, s: 72, d: 26, delay: -2, kind: 'ring' },
+  { x: 50, s: 40, d: 23, delay: -29, kind: 'fill' },
+  { x: 54, s: 40, d: 21, delay: -13, kind: 'cross' },
+  { x: 59, s: 144, d: 38, delay: -31, kind: 'ring' },
+  { x: 64, s: 56, d: 30, delay: -6, kind: 'icon', icon: 'accessibility' },
+  { x: 66, s: 62, d: 25, delay: -18, kind: 'fill' },
+  { x: 76, s: 240, d: 46, delay: -12, kind: 'fill' },
+  { x: 80, s: 58, d: 32, delay: -27, kind: 'icon', icon: 'house-heart' },
+  { x: 83, s: 48, d: 20, delay: -6, kind: 'ring' },
+  { x: 88, s: 36, d: 24, delay: -22, kind: 'cross' },
+  { x: 92, s: 116, d: 33, delay: -23, kind: 'fill' },
+  { x: 95, s: 50, d: 27, delay: -15, kind: 'icon', icon: 'heart-pulse' },
+  { x: 97, s: 44, d: 22, delay: -16, kind: 'ring' },
+  { x: 25, s: 84, d: 36, delay: -35, kind: 'ring' },
+  { x: 63, s: 30, d: 18, delay: -9, kind: 'ring' },
+  { x: 47, s: 96, d: 40, delay: -38, kind: 'fill' },
+];
+---
+
+<div class:list={['hm-bg', `hm-bg--${tone}`]} aria-hidden="true">
+  {
+    shapes.map((b) => (
+      <span
+        class:list={['bub', `bub--${b.kind}`]}
+        style={`--x:${b.x}%;--s:${b.s}px;--d:${b.d}s;--delay:${b.delay}s`}
+      >
+        {b.kind === 'cross' && (
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M8 0h8v8h8v8h-8v8H8v-8H0V8h8z" />
+          </svg>
+        )}
+        {b.kind === 'icon' && (
+          <svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <Fragment set:html={lucide(b.icon)} />
+          </svg>
+        )}
+      </span>
+    ))
+  }
+</div>
+
+{
+  controls && (
+    <button type="button" class="hm-toggle" aria-pressed="false" aria-label="Pause animations" title="Pause animations">
+      <svg class="i-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+      <svg class="i-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" /></svg>
+    </button>
+  )
+}
+
+<style>
+  .hm-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    container-type: size; /* lets shapes travel the hero's full height (cqh) */
+  }
+
+  .bub {
+    position: absolute;
+    left: var(--x);
+    bottom: calc(var(--s) * -1);
+    width: var(--s);
+    height: var(--s);
+    will-change: transform;
+  }
+  .bub--ring {
+    border-radius: 50%;
+    border: 2px solid rgb(94 220 203 / 0.28);
+  }
+  .bub--fill {
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgb(179 166 240 / 0.22), rgb(179 166 240 / 0.06));
+  }
+  .bub svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  /* Medical cross: one solid shape, square arms, brand teal-green. */
+  .bub--cross svg { fill: rgb(16 142 128 / 0.6); }
+  /* Care icons: outlined in the lighter teal-green. */
+  .bub--icon { color: rgb(94 220 203 / 0.45); }
+
+  /* Teal version (closing CTA on #0B7468): green shapes would vanish and light fills would cut
+     white-text contrast, so fills and crosses are deep navy (darkening) and rings/icons thin white. */
+  .hm-bg--teal .bub--ring { border-color: rgb(255 255 255 / 0.24); }
+  .hm-bg--teal .bub--fill {
+    background: radial-gradient(circle at 35% 30%, rgb(36 29 82 / 0.3), rgb(36 29 82 / 0.1));
+  }
+  .hm-bg--teal .bub--cross svg { fill: rgb(36 29 82 / 0.4); }
+  .hm-bg--teal .bub--icon { color: rgb(255 255 255 / 0.32); }
+
+  /* Still frame (reduced motion): shapes spread up the hero. */
+  .bub:nth-child(3n) { transform: translateY(-40cqh); }
+  .bub:nth-child(3n + 1) { transform: translateY(-75cqh); }
+  .bub:nth-child(3n + 2) { transform: translateY(-20cqh); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bub {
+      transform: none;
+      animation: rise var(--d) linear var(--delay) infinite;
+    }
+  }
+
+  @keyframes rise {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(24px, calc(-50cqh - 50%)); }
+    100% { transform: translate(0, calc(-100cqh - 100%)); }
+  }
+
+  :global(.motion-off) .bub,
+  :global(.is-covered) .bub {
+    animation-play-state: paused;
+  }
+
+  /* Top-right of the hero: seen on arrival, and never under the section that slides over. */
+  .hm-toggle {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--navy-600);
+    background: var(--navy);
+    color: var(--lav-200);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hm-toggle:hover {
+    border-color: #fff;
+    color: #fff;
+  }
+  .hm-toggle .i-play { display: none; }
+  .hm-toggle[aria-pressed='true'] .i-pause { display: none; }
+  .hm-toggle[aria-pressed='true'] .i-play { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .hm-toggle { transition: border-color 0.18s ease-out, color 0.18s ease-out; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hm-toggle { display: none; }
+  }
+</style>
+
+<script>
+  // Page-wide pause for all decorative motion (hero shapes + "Why choose Nami" icons), via
+  // html.motion-off. Remembered on this device so someone who paused once isn't bothered again.
+  const KEY = 'nami-motion-off';
+  const root = document.documentElement;
+  const btn = document.querySelector<HTMLButtonElement>('.hm-toggle');
+
+  const apply = (off: boolean) => {
+    root.classList.toggle('motion-off', off);
+    btn?.setAttribute('aria-pressed', String(off));
+  };
+  let saved = false;
+  try {
+    saved = localStorage.getItem(KEY) === '1';
+  } catch {}
+  apply(saved);
+
+  btn?.addEventListener('click', () => {
+    const off = !root.classList.contains('motion-off');
+    apply(off);
+    try {
+      localStorage.setItem(KEY, off ? '1' : '0');
+    } catch {}
+  });
+</script>

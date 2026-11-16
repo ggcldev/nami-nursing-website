@@ -1,0 +1,51 @@
+---
+// Wave mark ("Nami" means wave) + wordmark.
+interface Props {
+  variant?: 'light' | 'dark';
+  class?: string;
+}
+
+import { path } from '../data/site';
+
+const { variant = 'light', class: className } = Astro.props;
+const top = variant === 'light' ? 'var(--navy)' : '#fff';
+const bottom = variant === 'light' ? 'var(--teal)' : 'var(--teal-light)';
+---
+
+<a href={path("/")} class:list={['logo', `logo--${variant}`, className]} aria-label="Nami Nursing and Support, home">
+  <svg width="46" height="32" viewBox="0 0 40 28" fill="none" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+    <path d="M2 10c4.5 0 4.5-6 9-6s4.5 6 9 6 4.5-6 9-6 4.5 6 9 6" stroke={top}></path>
+    <path d="M2 22c4.5 0 4.5-6 9-6s4.5 6 9 6 4.5-6 9-6 4.5 6 9 6" stroke={bottom}></path>
+  </svg>
+  <span class="logo-text" aria-hidden="true">
+    <span class="logo-name">Nami</span>
+    <span class="logo-sub">Nursing and Support</span>
+  </span>
+</a>
+
+<style>
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 4px 0;
+    text-decoration: none;
+  }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .logo-name {
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 28px;
+  }
+  .logo-sub {
+    font-size: 15px;
+  }
+  .logo--light .logo-name { color: var(--navy); }
+  .logo--light .logo-sub { color: var(--ink-3); }
+  .logo--dark .logo-name { color: #fff; }
+  .logo--dark .logo-sub { color: var(--lav-200); }
+</style>

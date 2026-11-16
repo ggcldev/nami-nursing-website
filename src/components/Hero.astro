@@ -1,0 +1,112 @@
+---
+import LineIcon from './LineIcon.astro';
+import EnquiryForm from './EnquiryForm.astro';
+import HeroMotion from './HeroMotion.astro';
+import { site, trustTicks } from '../data/site';
+---
+
+<section id="top" class="hero pad on-dark" aria-labelledby="hero-title" data-track-location="hero">
+  <HeroMotion />
+  <div class="hero-grid container">
+    <div class="hero-copy">
+      <h1 id="hero-title" class="hero-h1">{site.tagline}</h1>
+      <p class="hero-sub">
+        One team for support work, personal care, community access, transport, domestic help and registered nursing.
+        The workers who already know you can bring in a nurse when your care needs it.
+      </p>
+      <div class="hero-actions">
+        <a href={site.phone.href} class="btn btn--white hero-call">
+          <LineIcon name="phone" size={24} />
+          Talk to our team today
+        </a>
+      </div>
+      <ul class="ticks hero-ticks" aria-label="What you can count on">
+        {trustTicks.map((t) => <li><LineIcon name="check" />{t}</li>)}
+      </ul>
+    </div>
+
+    <EnquiryForm />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--navy);
+    color: #fff;
+    padding-top: 88px;
+    padding-bottom: 96px;
+  }
+  .hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 48px 56px;
+    align-items: start;
+  }
+  .hero-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 8px;
+  }
+  .hero-h1 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 52px;
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: #fff;
+    max-width: 15ch;
+    text-wrap: balance;
+  }
+  .hero-sub {
+    margin: 0;
+    max-width: 30em;
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--lav-200);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 36px;
+    align-items: center;
+    padding-top: 8px;
+  }
+  .hero-call {
+    gap: 14px;
+    min-height: 68px;
+    padding: 18px 32px;
+  }
+  .hero-ticks {
+    margin-top: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--navy-600);
+    color: var(--lav-200);
+  }
+  .hero-ticks :global(svg) { color: var(--teal-light); }
+
+  @media (min-width: 1280px) {
+    .hero-grid { gap: 56px 96px; }
+  }
+  @media (max-width: 1279px) {
+    .hero-h1 { font-size: clamp(34px, 4vw, 48px); }
+    .hero-sub { font-size: 17px; }
+  }
+  @media (max-width: 959px) {
+    .hero-h1 { font-size: clamp(32px, 5.4vw, 42px); }
+    .hero-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .hero-call {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

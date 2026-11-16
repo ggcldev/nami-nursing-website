@@ -1,0 +1,125 @@
+---
+// Native details/summary: every answer is in the HTML for crawlers and works without JavaScript.
+import LineIcon from './LineIcon.astro';
+import { site, faqs } from '../data/site';
+---
+
+<section id="faq" class="section pad bg-white" aria-labelledby="faq-title" data-track-location="faq">
+  <div class="container faq-grid">
+    <div class="faq-intro reveal">
+      <h2 id="faq-title" class="h2">Questions people ask before they call</h2>
+      <p class="lede">
+        Is yours not here? <a href={site.phone.href} class="prose-link num">Call {site.phone.display}</a> and ask us directly.
+      </p>
+    </div>
+
+    <div class="faq-list">
+      {
+        faqs.map((f) => (
+          <details class="faq reveal" open={f.open}>
+            <summary>
+              <span class="faq-q">{f.q}</span>
+              <span class="faq-icon" aria-hidden="true">
+                <LineIcon name="plus" size={18} />
+              </span>
+            </summary>
+            <div class="faq-answer">
+              {f.a.map((p) => <p set:html={p} />)}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 48px 96px;
+    align-items: start;
+  }
+  .faq-intro {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  /* Two-column layout: the intro stays pinned below the sticky header while the questions
+     scroll; when the list ends, the section (and the intro with it) scrolls on. */
+  @media (min-width: 960px) {
+    .faq-intro {
+      position: sticky;
+      top: calc(var(--header-h, 96px) + 40px);
+      align-self: start;
+    }
+  }
+  .faq-intro .h2 { max-width: 14ch; }
+  .faq-intro .lede { max-width: 24em; }
+
+  .faq-list {
+    min-width: 0;
+    border-top: 2px solid var(--navy);
+  }
+  .faq { border-bottom: 1px solid var(--line); }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 22px 0;
+    min-height: 44px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover .faq-q {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+  .faq-q {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--navy);
+  }
+  .faq-icon {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--lav-400);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .faq[open] .faq-icon {
+    transform: rotate(45deg);
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq-icon { transition: transform 0.15s ease-out; }
+  }
+  .faq-answer {
+    padding: 0 64px 26px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .faq-answer p { margin: 0; }
+  .faq-answer :global(strong) { color: var(--navy); }
+
+  @media (max-width: 959px) {
+    .faq-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .faq-answer { padding-right: 0; }
+  }
+</style>

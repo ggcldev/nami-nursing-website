@@ -1,0 +1,41 @@
+---
+import Icon from './Icon.astro';
+import type { Tone } from '../data/site';
+
+interface Props {
+  name: string;
+  tone: Tone;
+  /** Circle diameter in px. */
+  size?: number;
+  /** Icon size in px (defaults to half the circle). */
+  iconSize?: number;
+}
+
+const { name, tone, size = 56, iconSize = Math.round(size / 2) } = Astro.props;
+---
+
+<span class:list={['icon-circle', `tone-${tone}`]} style={`--d:${size}px`} aria-hidden="true">
+  <Icon name={name} size={iconSize} />
+</span>
+
+<style>
+  .icon-circle {
+    flex: none;
+    width: var(--d);
+    height: var(--d);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  /* Coral and yellow are icon-only accents (client to approve). */
+  .tone-coral { --bg: var(--coral); --fg: #fff; }
+  .tone-yellow { --bg: var(--yellow); --fg: var(--navy-900); }
+  .tone-teal { --bg: var(--teal); --fg: #fff; }
+  .tone-mint { --bg: var(--teal-light); --fg: var(--navy-900); }
+  .tone-lavender { --bg: var(--lav-400); --fg: var(--navy-900); }
+  .tone-navy { --bg: var(--navy); --fg: #fff; }
+  .tone-pale { --bg: var(--lav-150); --fg: var(--navy); }
+</style>

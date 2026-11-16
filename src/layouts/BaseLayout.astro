@@ -1,0 +1,68 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { site, path } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const gaId = import.meta.env.PUBLIC_GA4_ID;
+---
+
+<!doctype html>
+<html lang="en-AU" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {
+      /* Test/preview builds (PUBLIC_NOINDEX=true, e.g. GitHub Pages) stay out of search results. */
+      (noindex || import.meta.env.PUBLIC_NOINDEX === 'true') && <meta name="robots" content="noindex, nofollow" />
+    }
+    <meta name="theme-color" content="#332A6F" />
+    <link rel="icon" href={path("/favicon.svg")} type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_AU" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    <Font cssVariable="--font-serif" preload={[{ weight: 900 }]} />
+    <Font cssVariable="--font-sans" preload={[{ weight: 400 }]} />
+
+    {
+      gaId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+          <script is:inline define:vars={{ gaId }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', gaId);
+          </script>
+        </>
+      )
+    }
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to main content</a>
+    <slot />
+    <script>
+      import { initCallTracking } from '../scripts/analytics';
+      import { initReveal } from '../scripts/reveal';
+      initCallTracking();
+      initReveal();
+    </script>
+  </body>
+</html>

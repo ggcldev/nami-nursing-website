@@ -1,0 +1,27 @@
+---
+// Heroicons v2.2.0, 24px solid (MIT). Read from the npm package at build time and inlined.
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 24, class: className } = Astro.props;
+const file = path.resolve(process.cwd(), 'node_modules/heroicons/24/solid', `${name}.svg`);
+const inner = fs
+  .readFileSync(file, 'utf8')
+  .replace(/^[\s\S]*?<svg[^>]*>/, '')
+  .replace(/<\/svg>\s*$/, '');
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+  class={className}><Fragment set:html={inner} /></svg>

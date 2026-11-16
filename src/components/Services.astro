@@ -1,0 +1,382 @@
+---
+import { Image } from 'astro:assets';
+import IconCircle from './IconCircle.astro';
+import LineIcon from './LineIcon.astro';
+import { site, everydayServices, nursing, path } from '../data/site';
+
+// Hover-only icon motion per service (styles: .icon-move in global.css).
+const motionFor: Record<string, string> = {
+  users: 'bob',
+  heart: 'pulse',
+  'building-storefront': 'drop',
+  map: 'tilt',
+  home: 'drop',
+};
+
+// Wave line from x=-160 to x=1600 (one period = 80 units), wider than the 1440-unit view so it
+// can slide one period either way and loop seamlessly across the full-width card.
+const wave = `M-160 20c20 0 20-16 40-16s20 16 40 16${' 20-16 40-16 20 16 40 16'.repeat(21)}`;
+---
+
+<section id="services" class="section pad bg-white" aria-labelledby="svc-title" data-track-location="services">
+  <div class="container svc">
+    <div class="svc-head reveal">
+      <h2 id="svc-title" class="h2">Six services. One team that already knows you.</h2>
+      <a href={path("/services/")} class="svc-all">View all services</a>
+    </div>
+
+    <div class="svc-wrap">
+      <div class="svc-col">
+        <p class="eyebrow reveal">Everyday help <span>7 days a week</span></p>
+        <ul class="tile-grid">
+          {
+            everydayServices.map((s) => (
+              <li class="tile hover-moves reveal-pop">
+                <span class:list={["svc-icon icon-move", `move-${motionFor[s.icon] ?? "bob"}`]}>
+                  <IconCircle name={s.icon} tone={s.tone} size={56} />
+                </span>
+                <h3 class="tile-h">
+                  <a href={s.href} class="tile-link">{s.name}</a>
+                </h3>
+                <p class="tile-blurb">{s.blurb}</p>
+                <span class="tile-arrow" aria-hidden="true">
+                  <LineIcon name="arrow" size={18} />
+                </span>
+              </li>
+            ))
+          }
+          <li class="tile-help hover-moves reveal-pop">
+            <span class="svc-icon icon-move move-tilt">
+              <IconCircle name="question-mark-circle" tone="pale" size={56} />
+            </span>
+            <h3 class="tile-h">Not sure which you need?</h3>
+            <p class="tile-blurb">That is normal. Call and we will work it out with you.</p>
+            <a href={site.phone.href} class="help-call num">
+              <LineIcon name="phone" />Call {site.phone.display}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="svc-col">
+        <p class="eyebrow reveal">Clinical care <span>Available 24/7</span></p>
+        <div class="nursing on-dark hover-moves reveal-pop">
+          {
+            site.nursingPhoto ? (
+              <Image
+                class="nursing-photo"
+                src={site.nursingPhoto.src}
+                alt={site.nursingPhoto.alt}
+                widths={[480, 720, 1040]}
+                sizes="(max-width: 899px) 100vw, 50vw"
+              />
+            ) : (
+              <div class="nursing-photo nursing-photo--placeholder" role="img" aria-label="Nursing photo placeholder">
+                <LineIcon name="photo" size={40} />
+                <strong>[NURSING PHOTO]</strong>
+                <span>A real Nami nurse with a participant</span>
+              </div>
+            )
+          }
+          <div class="nursing-body">
+            <span class="icon-move move-pulse">
+              <IconCircle name="plus-circle" tone="coral" size={64} />
+            </span>
+            <h3 class="nursing-h">{nursing.name}</h3>
+            <p class="nursing-text">{nursing.text}</p>
+            <a href={nursing.href} class="btn btn--white nursing-btn">
+              About our nursing services <LineIcon name="arrow" class="nudge" />
+            </a>
+          </div>
+          <svg class="nursing-wave" aria-hidden="true" viewBox="0 -2 1440 72" preserveAspectRatio="xMinYMid slice" fill="none" stroke-width="3" stroke-linecap="round">
+            <path class="wv wv-a" stroke="#108E80" d={wave}></path>
+            <g transform="translate(0 22)"><path class="wv wv-b" stroke="#4A4190" d={wave}></path></g>
+            <g transform="translate(0 44)"><path class="wv wv-c" stroke="#3B3180" d={wave}></path></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .svc {
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+  .svc-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 72px;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .svc-head .h2 { max-width: 18ch; }
+  .svc-all {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--navy);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .svc-all:hover { text-decoration-thickness: 3px; }
+
+  /* Tiles keep their natural size and set the height; the Nursing panel stretches to match and
+     its photo grows to fill whatever height is left, so both columns end level. */
+  .svc-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 28px;
+    align-items: stretch;
+  }
+  .svc-col {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .tile-grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 16px;
+  }
+  .tile,
+  .tile-help {
+    position: relative;
+    min-width: 0;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tile { background: var(--lav-100); }
+  .svc-icon { margin-bottom: 6px; }
+  .tile-h {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--navy);
+  }
+  .tile-link {
+    color: var(--navy);
+    text-decoration: none;
+  }
+  /* Whole tile is the click target. */
+  .tile-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+  .tile-link:focus-visible { outline: none; }
+  .tile:has(.tile-link:focus-visible) {
+    outline: 3px solid var(--navy);
+    outline-offset: 3px;
+  }
+  .tile-blurb {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+  .tile-arrow {
+    margin-top: auto;
+    align-self: flex-end;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--lav-400);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tile:hover { background: var(--teal-dark); }
+  .tile:hover .tile-link,
+  .tile:hover .tile-blurb {
+    color: #fff;
+  }
+  .tile:hover .tile-arrow {
+    background: #fff;
+    border-color: #fff;
+    color: var(--teal-dark);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tile { transition: background-color 0.15s ease-out; }
+    .tile-arrow { transition: background-color 0.15s ease-out, color 0.15s ease-out; }
+    .tile-arrow :global(svg) { transition: transform 0.2s ease-out; }
+    .tile:hover .tile-arrow :global(svg) { transform: translateX(5px); }
+  }
+
+  .tile-help {
+    background: #fff;
+    border: 2px solid var(--navy);
+    padding: 26px;
+  }
+  .help-call {
+    margin-top: auto;
+    align-self: flex-start;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--navy);
+  }
+
+  .nursing {
+    flex: 1;
+    overflow: hidden;
+    background: var(--navy);
+    color: #fff;
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  /* Body wrapper is layout-neutral: its children sit in the panel's column. */
+  .nursing-body { display: contents; }
+  /* Photo runs edge to edge across the top of the panel (no top/side padding); the panel's
+     rounded corners and overflow: hidden clip it. */
+  .nursing-photo {
+    flex: 1 1 auto;
+    width: calc(100% + 80px);
+    max-width: none; /* the global img max-width: 100% would stop it bleeding to the edges */
+    height: auto;
+    min-height: 320px;
+    margin: -40px -40px 4px;
+    object-fit: cover;
+    display: block;
+  }
+  .nursing-photo--placeholder {
+    background: var(--navy-700);
+    border-bottom: 2px dashed var(--lav-500);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: var(--lav-300);
+    padding: 20px;
+  }
+  .nursing-photo--placeholder :global(svg) { color: var(--lav-400); }
+  .nursing-photo--placeholder strong {
+    font-size: 17px;
+    color: #fff;
+  }
+  .nursing-photo--placeholder span { font-size: 15px; }
+  /* Stacked layouts have no column to match, so the photo gets a fixed height. */
+  @media (max-width: 1079px) {
+    .nursing-photo {
+      flex: none;
+      height: 420px;
+    }
+  }
+  @media (max-width: 760px) {
+    .nursing-photo {
+      width: calc(100% + 56px);
+      height: 320px;
+      margin: -28px -28px 4px;
+    }
+  }
+
+  .nursing-h {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .nursing-text {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--lav-200);
+  }
+  .nursing-list {
+    margin: 0;
+    padding: 20px 0 0;
+    list-style: none;
+    border-top: 1px solid var(--navy-600);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .nursing-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .nursing-list :global(svg) {
+    flex: none;
+    color: var(--teal-light);
+  }
+  .nursing-btn {
+    align-self: flex-start;
+    margin-top: 6px;
+  }
+  .nursing-wave {
+    display: block;
+    flex: none;
+    width: calc(100% + 80px);
+    height: 96px;
+    margin: auto -40px -40px;
+  }
+
+  /* Waves flow constantly: each line slides one wave-length and loops, at its own speed,
+     middle line the other way, so it reads as moving water. Paused by the page-wide pause
+     button (html.motion-off); still under reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .wv { will-change: transform; }
+    .wv-a { animation: wave-left 3.5s linear infinite; }
+    .wv-b { animation: wave-right 5s linear infinite; }
+    .wv-c { animation: wave-left 7s linear infinite; }
+    :global(.motion-off) .wv { animation-play-state: paused; }
+  }
+  @keyframes wave-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-80px); }
+  }
+  @keyframes wave-right {
+    from { transform: translateX(-80px); }
+    to { transform: translateX(0); }
+  }
+
+  @media (max-width: 1079px) {
+    .svc-wrap {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+  @media (max-width: 680px) {
+    .tile-grid {
+      grid-template-columns: 1fr;
+      grid-auto-rows: auto;
+    }
+  }
+  @media (max-width: 760px) {
+    .nursing { padding: 28px; }
+    .nursing-wave {
+      width: calc(100% + 56px);
+      margin: auto -28px -28px;
+    }
+    .nursing-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
