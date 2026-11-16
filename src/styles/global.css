@@ -21,6 +21,8 @@
   --coral: #f26b6b; /* icon circles only */
   --yellow: #f7c548; /* icon circles only */
 
+  /* Sticky header height (Header.astro measures and overrides this; these are the fallbacks). */
+  --header-h: 97px;
   --radius: 10px;
   --radius-lg: 16px;
   --gutter: 48px;
@@ -29,6 +31,9 @@
 
 @media (max-width: 1279px) {
   :root { --gutter: 32px; }
+}
+@media (max-width: 959px) {
+  :root { --header-h: 93px; }
 }
 @media (max-width: 760px) {
   :root { --gutter: 20px; }

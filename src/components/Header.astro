@@ -35,8 +35,10 @@ const links = [
 </header>
 
 <style>
-  /* Sticky: always one tap from the phone number. Height never changes on scroll (no layout jump);
-     a soft shadow appears once the page has moved. */
+  /* Sticky: always one tap from the phone number. At the top it is a full-width white bar; once
+     the page scrolls it becomes a floating frosted-glass pill (Apple/macOS style) and the page
+     shows, blurred, through it. Total height never changes (header padding shrinks by exactly
+     what the pill adds), so nothing below jumps. */
   .site-header {
     position: sticky;
     top: 0;
@@ -45,20 +47,10 @@ const links = [
     border-bottom: 1px solid var(--line-soft);
     padding-top: 18px;
     padding-bottom: 18px;
-  }
-  .site-header.is-scrolled {
-    border-bottom-color: transparent;
-    box-shadow: 0 6px 24px rgb(23 22 42 / 0.12);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .site-header { transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out; }
-  }
-  @media (max-width: 959px) {
-    /* An open menu taller than the screen scrolls inside the header. */
-    .site-header {
-      max-height: 100dvh;
-      overflow-y: auto;
-    }
+    /* Take up no space: the hero starts at the very top and runs underneath, so the glass pill
+       always floats over the navy hero, never over an empty white strip. The hero adds the
+       header height to its own top padding (Hero.astro). */
+    margin-bottom: calc(-1 * var(--header-h));
   }
   .head-row {
     display: flex;
@@ -66,6 +58,69 @@ const links = [
     gap: 12px 40px;
     align-items: center;
     justify-content: space-between;
+    border-radius: 0;
+  }
+
+  .site-header.is-scrolled {
+    background: transparent;
+    border-bottom-color: transparent;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .site-header.is-scrolled .head-row {
+    max-width: 1280px;
+    padding: 6px 6px 6px 32px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.94);
+    box-shadow:
+      0 12px 32px rgb(23 22 42 / 0.18),
+      0 2px 6px rgb(23 22 42 / 0.08),
+      inset 0 0 0 1px rgb(51 42 111 / 0.08);
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .site-header.is-scrolled .head-row {
+      background: rgb(255 255 255 / 0.8);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+    }
+    /* Open menu: near-solid so page text never shows through the links. */
+    .site-header.is-scrolled:has(.burger[aria-expanded='true']) .head-row {
+      background: rgb(255 255 255 / 0.97);
+    }
+  }
+  .site-header.is-scrolled .head-phone,
+  .site-header.is-scrolled .burger {
+    border-radius: 999px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .site-header {
+      transition: background-color 0.3s ease, border-color 0.3s ease, padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    .head-row {
+      transition:
+        max-width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+        padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+        border-radius 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+        background-color 0.3s ease,
+        box-shadow 0.4s ease;
+    }
+    .head-phone,
+    .burger { transition: background-color 0.18s ease-out, border-radius 0.4s ease; }
+  }
+
+  @media (max-width: 959px) {
+    .site-header.is-scrolled .head-row { padding: 6px 6px 6px 20px; }
+    /* Open menu: the pill becomes a rounded card so the links fit; a menu taller than the
+       screen scrolls inside the header. */
+    .site-header:has(.burger[aria-expanded='true']) {
+      max-height: 100dvh;
+      overflow-y: auto;
+    }
+    .site-header.is-scrolled:has(.burger[aria-expanded='true']) .head-row {
+      border-radius: 28px;
+      padding-right: 20px;
+    }
   }
   .nav {
     display: flex;
@@ -105,10 +160,6 @@ const links = [
   .burger :global(.i-close) { display: none; }
   .burger[aria-expanded='true'] :global(.i-open) { display: none; }
   .burger[aria-expanded='true'] :global(.i-close) { display: block; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .burger { transition: background-color 0.18s ease-out; }
-  }
 
   @media (max-width: 959px) {
     .head-row {
@@ -178,7 +229,7 @@ const links = [
   if (header) {
     // Expose the header height so in-page links land below it (scroll-padding-top in global.css).
     const setHeight = () =>
-      document.documentElement.style.setProperty('--header-h', `${Math.round(header.getBoundingClientRect().height)}px`);
+      document.documentElement.style.setProperty('--header-h', `${header.getBoundingClientRect().height}px`);
     setHeight();
     new ResizeObserver(setHeight).observe(header);
 
@@ -187,7 +238,7 @@ const links = [
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        header.classList.toggle('is-scrolled', window.scrollY > 4);
+        header.classList.toggle('is-scrolled', window.scrollY > 24);
         ticking = false;
       });
     };

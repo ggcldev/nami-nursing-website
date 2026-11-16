@@ -1,6 +1,6 @@
 // Hero "cover" effect: the hero stays put while the next section slides over it.
 // The hero is often taller than the screen (the form), so it pins when its BOTTOM reaches the
-// bottom of the viewport: top = min(header height, viewport height - hero height).
+// bottom of the viewport: top = min(0, viewport height - hero height).
 // Also keeps links and keyboard focus that target the hero working while it's covered.
 
 export function initHeroCover(): void {
@@ -18,7 +18,9 @@ export function initHeroCover(): void {
       root.classList.remove('has-cover');
       return;
     }
-    const top = Math.min(headerH(), window.innerHeight - hero.offsetHeight);
+    // The hero starts at the very top of the page (under the sticky header), so it never needs
+    // pushing down: pin at 0, or higher if it is taller than the screen.
+    const top = Math.min(0, window.innerHeight - hero.offsetHeight);
     wrap.style.setProperty('--hero-top', `${Math.round(top)}px`);
     root.classList.add('has-cover');
   };

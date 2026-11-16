@@ -36,7 +36,8 @@ import { site, trustTicks } from '../data/site';
     isolation: isolate;
     background: var(--navy);
     color: #fff;
-    padding-top: 88px;
+    /* Starts at the very top of the page, under the sticky header, so add its height. */
+    padding-top: calc(88px + var(--header-h));
     padding-bottom: 96px;
   }
   .hero-grid {

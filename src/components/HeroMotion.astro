@@ -159,7 +159,7 @@ const shapes: ({ x: number; s: number; d: number; delay: number } & Shape)[] = [
   .hm-toggle {
     position: absolute;
     right: 16px;
-    top: 16px;
+    top: calc(var(--header-h) + 16px); /* the hero runs under the sticky header */
     z-index: 2;
     width: 44px;
     height: 44px;
